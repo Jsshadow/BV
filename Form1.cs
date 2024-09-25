@@ -242,38 +242,32 @@ namespace INFOIBV
             return tempImage;
         }
 
+        private TB FoldlFilter<TA, TB>(Func<TA, TB, TB> f,TB startV, TA[,] filter)
+        {
+            foreach (TA v in filter)
+            {
+                startV = f(v,startV);
+            }
+            return startV;
+        }
+        
+        private TB FoldrFilter<TA, TB>(Func<TA, TB, TB> f,TB startV, TA[,] filter)
+        {
+            IEnumerable<TA> enumerableThing = filter.Cast<TA>();
+            foreach (TA v in enumerableThing.Reverse())
+            {
+                startV = f(v,startV);
+            }
+            return startV;
+        }
 
         private byte getMax(byte[,] img)
         {
-            byte max = Byte.MinValue;
-            for (int i = 0; i < img.GetLength(0); i++)
-            {
-                for (int j = 0; j < img.GetLength(1); j++)
-                {
-                    if (img[i,j] > max)
-                    {
-                        max = img[i, j];
-                    }
-                }
-            }
-
-            return max;
+            return FoldlFilter((v, a) => v > a ? v : a, Byte.MinValue, img);
         }
         private byte getMin(byte[,] img)
         {
-            byte min = Byte.MaxValue;
-            for (int i = 0; i < img.GetLength(0); i++)
-            {
-                for (int j = 0; j < img.GetLength(1); j++)
-                {
-                    if (img[i,j] < min)
-                    {
-                        min = img[i, j];
-                    }
-                }
-            }
-
-            return min;
+            return FoldlFilter((v, a) => v < a ? v : a, Byte.MaxValue, img);
         }
         
 
@@ -635,13 +629,7 @@ namespace INFOIBV
         //max of image one plus image two (for edges ignore parts that fall outside the range)
         private int[,] maxImage(int[,] image1, int[,] image2)
         {
-            if ((image1.GetLength(0) != image2.GetLength(0) || (image1.GetLength(1) != image2.GetLength(1))))
-            {
-                MessageBox.Show("Images are not the same size");
-                return (new int[0,0]);
-            }
-
-            return new int [0, 0];
+            
         }
         //for min:
         //smallest difference between image1[i,j] and image2[i,j]
