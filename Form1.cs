@@ -36,6 +36,8 @@ namespace INFOIBV
             Pipeline3_3,
             Pipeline3_4,
             Pipeline3_5,
+            Dilate,
+            Erode
         }
 
         private enum ElementShape
@@ -160,9 +162,25 @@ namespace INFOIBV
                     return pipeline3_4(workingImage, horizontalKernel, verticalKernel, pipelineThreshold);
                 case ProcessingFunctions.Pipeline3_5:
                     return pipeline3_5(workingImage, horizontalKernel, verticalKernel, pipelineThreshold);
+                case ProcessingFunctions.Dilate:
+                    return intArrayToByteArray(dilateImage(byteArrayToIntArray(workingImage),
+                        structuringElement(ElementShape.Square, 3, true), true));
+                case ProcessingFunctions.Erode:
+                    return intArrayToByteArray(erodeImage(byteArrayToIntArray(workingImage),
+                        structuringElement(ElementShape.Square, 3, true), true));
                 default:
                     return null;
             }
+        }
+
+        int[,] byteArrayToIntArray(byte[,] bytes)
+        {
+            return PointOperationImage(bytes, (b, i, arg3) => (int)b);
+        }
+
+        byte[,] intArrayToByteArray(int[,] ints)
+        {
+            return PointOperationImage(ints, (i, i1, arg3) => (byte)i);
         }
 
 
@@ -629,14 +647,14 @@ namespace INFOIBV
         //max of image one plus image two (for edges ignore parts that fall outside the range)
         private int[,] maxImage(int[,] image1, int[,] image2)
         {
-            
+            return new int[0, 0];
         }
         //for min:
         //smallest difference between image1[i,j] and image2[i,j]
 
         private int[,] structuringElement(ElementShape shape, int size, bool binary)
         {
-            if (size % 2 != 0)
+            if (size % 2 == 0)
             {
                 MessageBox.Show("Element Size is even, please enter an odd element size");
                 return new int[0, 0];
@@ -670,12 +688,24 @@ namespace INFOIBV
             }
             return outimg;
         }
+        private int[,] set255(int h, int w)
+        {
+            int[,] outimg = new int[w, h];
+            for (int i = 0; i < w; i++)
+            {
+                for (int j = 0; j < h; j++)
+                {
+                    outimg[i, j] = 255;
+                }
+            }
+            return outimg;
+        }
 
         private int[,] dilateImage(int[,] inputImage, int[,] structuralElement, bool binary)
         {
             int size = structuralElement.GetLength(0);
             int x = (size - 1) / 2;
-            int[,] outputImage = setZeros(inputImage.GetLength(0), inputImage.GetLength(1));
+            int[,] outputImage = setZeros(inputImage.GetLength(1), inputImage.GetLength(0));
             if (binary)
             {
                 for (int i = 0; i < inputImage.GetLength(0); i++)
@@ -688,15 +718,15 @@ namespace INFOIBV
                         {
                             for (int l = -x; l <= x; l++)
                             {
-                                if (i + k < 0 || i + k > inputImage.GetLength(0))
+                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
                                 {
                                     break;
                                 }
-                                if (j + l < 0 || j + l > inputImage.GetLength(1))
+                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
                                 {
                                     break;
                                 }
-                                if (structuralElement[k, l] == 255)
+                                if (structuralElement[k+x, l+x] == 255)
                                 {
                                     outputImage[i + k, j + l] = 255;
                                 }
@@ -711,14 +741,24 @@ namespace INFOIBV
                 {
                     for (int j = 0; j < inputImage.GetLength(1); j++)
                     {
+                        int[,] temp = setZeros(structuralElement.GetLength(0), structuralElement.GetLength(1));
                         for (int k = -x; k <= x; k++)
                         {
                             for (int l = -x; l <= x; l++)
                             {
-                                if (structuralElement[k, l] == -1) break;
-                                
+                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
+                                {
+                                    break;
+                                }
+                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
+                                {
+                                    break;
+                                }
+                                if (structuralElement[k+x, l+x] == -1) break;
+                                temp[k+x, l+x] = inputImage[i + k, j + l] + structuralElement[k+x, l+x];
                             }
                         }
+                        outputImage[i, j] = (int)getMax(PointOperationImage(temp, (i1, I, J) => (byte)i1));
                     }
                 }
             }
@@ -729,7 +769,7 @@ namespace INFOIBV
         {
             int size = structuralElement.GetLength(0);
             int x = (size - 1) / 2;
-            int[,] outputImage = setZeros(inputImage.GetLength(0), inputImage.GetLength(1));
+            int[,] outputImage = setZeros(inputImage.GetLength(1), inputImage.GetLength(0));
             if (binary)
             {
                 for (int i = 0; i < inputImage.GetLength(0); i++)
@@ -741,15 +781,15 @@ namespace INFOIBV
                         {
                             for (int l = -x; l <= x; l++)
                             {
-                                if (i + k < 0 || i + k > inputImage.GetLength(0))
+                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
                                 {
                                     break;
                                 }
-                                if (j + l < 0 || j + l > inputImage.GetLength(1))
+                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
                                 {
                                     break;
                                 }
-                                check = ((inputImage[i + k, j + l] == 255 && structuralElement[k, l] == 255)|| (inputImage[i+k, j+l] == 0 && structuralElement[k,l] == 0)) && check;
+                                check = ((inputImage[i + k, j + l] == 255 && structuralElement[k+x, l+x] == 255)|| (inputImage[i+k, j+l] == 0 && structuralElement[k+x,l+x] == 0)) && check;
                             }
                         }
                         if (check)
@@ -761,7 +801,30 @@ namespace INFOIBV
             }
             else
             {
-                
+                for (int i = 0; i < inputImage.GetLength(0); i++)
+                {
+                    for (int j = 0; j < inputImage.GetLength(1); j++)
+                    {
+                        int[,] temp = set255(structuralElement.GetLength(0), structuralElement.GetLength(1));
+                        for (int k = -x; k <= x; k++)
+                        {
+                            for (int l = -x; l <= x; l++)
+                            {
+                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
+                                {
+                                    break;
+                                }
+                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
+                                {
+                                    break;
+                                }
+                                if (structuralElement[k+x, l+x] == -1) break;
+                                temp[k+x, l+x] = inputImage[i + k, j + l] - structuralElement[k+x, l+x];
+                            }
+                        }
+                        outputImage[i, j] = (int)getMin(PointOperationImage(temp, (i1, I, J) => (byte)i1));
+                    }
+                }
             }
             return outputImage;
         }

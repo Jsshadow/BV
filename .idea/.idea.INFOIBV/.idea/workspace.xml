@@ -10,6 +10,11 @@
     <list default="true" id="7006531f-6654-4283-8f5e-a3ed503ed201" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Form1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Form1.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.FileListAbsolute.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +23,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/c0f8d183e43847009e4e164aee6d042f91960/27/774fa4cc/Bitmap.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
@@ -29,6 +37,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    ".NET Project.INFOIBV.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
     "node.js.detected.package.eslint": "true",
