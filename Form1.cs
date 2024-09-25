@@ -669,6 +669,114 @@ namespace INFOIBV
                     return new int[0, 0];
             }
         }
+
+        private int[,] setZeros(int h, int w)
+        {
+            int[,] outimg = new int[w,h];
+            for (int i = 0; i < w; i++)
+            {
+                for (int j = 0; j < h; j++)
+                {
+                    outimg[i, j] = 0;
+                }
+            }
+            return outimg;
+        }
+
+        private int[,] dilateImage(int[,] inputImage, int[,] structuralElement, bool binary)
+        {
+            int size = structuralElement.GetLength(0);
+            int x = (size - 1) / 2;
+            int[,] outputImage = setZeros(inputImage.GetLength(0), inputImage.GetLength(1));
+            if (binary)
+            {
+                for (int i = 0; i < inputImage.GetLength(0); i++)
+                {
+                    for (int j = 0; j < inputImage.GetLength(1); j++)
+                    {
+                        if (inputImage[i, j] == 0) break;
+                        
+                        for (int k = -x; k <= x; k++)
+                        {
+                            for (int l = -x; l <= x; l++)
+                            {
+                                if (i + k < 0 || i + k > inputImage.GetLength(0))
+                                {
+                                    break;
+                                }
+                                if (j + l < 0 || j + l > inputImage.GetLength(1))
+                                {
+                                    break;
+                                }
+                                if (structuralElement[k, l] == 255)
+                                {
+                                    outputImage[i + k, j + l] = 255;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < inputImage.GetLength(0); i++)
+                {
+                    for (int j = 0; j < inputImage.GetLength(1); j++)
+                    {
+                        for (int k = -x; k <= x; k++)
+                        {
+                            for (int l = -x; l <= x; l++)
+                            {
+                                if (structuralElement[k, l] == -1) break;
+                                
+                            }
+                        }
+                    }
+                }
+            }
+            return outputImage;
+        }
+
+        private int[,] erodeImage(int[,] inputImage, int[,] structuralElement, bool binary)
+        {
+            int size = structuralElement.GetLength(0);
+            int x = (size - 1) / 2;
+            int[,] outputImage = setZeros(inputImage.GetLength(0), inputImage.GetLength(1));
+            if (binary)
+            {
+                for (int i = 0; i < inputImage.GetLength(0); i++)
+                {
+                    for (int j = 0; j < inputImage.GetLength(1); j++)
+                    {
+                        bool check = true;
+                        for (int k = -x; k <= x; k++)
+                        {
+                            for (int l = -x; l <= x; l++)
+                            {
+                                if (i + k < 0 || i + k > inputImage.GetLength(0))
+                                {
+                                    break;
+                                }
+                                if (j + l < 0 || j + l > inputImage.GetLength(1))
+                                {
+                                    break;
+                                }
+                                check = ((inputImage[i + k, j + l] == 255 && structuralElement[k, l] == 255)|| (inputImage[i+k, j+l] == 0 && structuralElement[k,l] == 0)) && check;
+                            }
+                        }
+                        if (check)
+                        {
+                            outputImage[i, j] = 255;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                
+            }
+            return outputImage;
+        }
         
 
         // ====================================================================
