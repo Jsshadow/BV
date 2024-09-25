@@ -1,0 +1,10 @@
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\bin\Debug\INFOIBV.exe.config
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\bin\Debug\INFOIBV.exe
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\bin\Debug\INFOIBV.pdb
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\obj\x86\Debug\INFOIBV.csproj.AssemblyReference.cache
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\obj\x86\Debug\INFOIBV.INFOIBV.resources
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\obj\x86\Debug\INFOIBV.Properties.Resources.resources
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\obj\x86\Debug\INFOIBV.csproj.GenerateResource.cache
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\obj\x86\Debug\INFOIBV.csproj.CoreCompileInputs.cache
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\obj\x86\Debug\INFOIBV.exe
+C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\obj\x86\Debug\INFOIBV.pdb
