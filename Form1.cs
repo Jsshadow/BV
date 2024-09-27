@@ -38,7 +38,9 @@ namespace INFOIBV
             Pipeline3_4,
             Pipeline3_5,
             Dilate,
-            Erode
+            Erode,
+            Open,
+            Close
         }
 
         private enum ElementShape
@@ -117,7 +119,7 @@ namespace INFOIBV
 
         private void comboBox_Click(object sender, EventArgs e)
         {
-            if (comboBox.SelectedIndex == 14 || comboBox.SelectedIndex == 15)
+            if (comboBox.SelectedIndex == 14 || comboBox.SelectedIndex == 15 || comboBox.SelectedIndex == 16 || comboBox.SelectedIndex == 17)
             {
                 FilterSize.Visible = true;
                 StructuringShape.Visible = true;
@@ -217,7 +219,18 @@ namespace INFOIBV
                     }
                     return intArrayToByteArray(erodeImage(byteArrayToIntArray(workingImage),
                         structuringElement(shape1, _filterSize1, _binary1), _binary1));
-                    
+                case ProcessingFunctions.Open:
+                    int _filterSize2 = (FilterSize.SelectedIndex * 2) + 3;
+                    ElementShape shape2 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
+                    bool _binary2 = Binary.Checked;
+                    return intArrayToByteArray(openImage(byteArrayToIntArray(workingImage),
+                        structuringElement(shape2, _filterSize2, _binary2), _binary2));
+                case ProcessingFunctions.Close:
+                    int _filterSize3 = (FilterSize.SelectedIndex * 2) + 3;
+                    ElementShape shape3 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
+                    bool _binary3 = Binary.Checked;
+                    return intArrayToByteArray(openImage(byteArrayToIntArray(workingImage),
+                        structuringElement(shape3, _filterSize3, _binary3), _binary3));
                 default:
                     return null;
             }
@@ -890,6 +903,30 @@ namespace INFOIBV
                 }
             }
             return outputImage;
+        }
+
+        private int[,] openImage(int[,] inputImage, int[,] structuralElement, bool binary)
+        {
+            int[,] workingimage = inputImage;
+            if (binary)
+            {
+                workingimage = byteArrayToIntArray(thresholdImage(intArrayToByteArray(workingimage), threshold));
+            }
+            int[,] erodedImage = erodeImage(workingimage, structuralElement, binary);
+            int[,] dilatedImage = dilateImage(erodedImage, structuralElement, binary);
+            return dilatedImage;
+        }
+
+        private int[,] closeImage(int[,] inputImage, int[,] structuralElement, bool binary)
+        {
+            int[,] workingimage = inputImage;
+            if (binary)
+            {
+                workingimage = byteArrayToIntArray(thresholdImage(intArrayToByteArray(workingimage), threshold));
+            }
+            int[,] dilatedImage = dilateImage(workingimage, structuralElement, binary);
+            int[,] erodedImage = erodeImage(dilatedImage, structuralElement, binary);
+            return erodedImage;
         }
         
 

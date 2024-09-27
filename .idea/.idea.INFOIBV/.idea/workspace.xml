@@ -8,7 +8,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="7006531f-6654-4283-8f5e-a3ed503ed201" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Form1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Form1.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" afterDir="false" />
@@ -34,7 +33,7 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    ".NET Project.INFOIBV.executor": "Debug",
+    ".NET Project.INFOIBV.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "ToolWindowDesigner Toolbox.ShowToolbar": "false",
     "git-widget-placeholder": "master",
@@ -86,7 +85,7 @@
       <workItem from="1726219820500" duration="10000" />
       <workItem from="1727265570827" duration="5210000" />
       <workItem from="1727428656149" duration="271000" />
-      <workItem from="1727429285415" duration="11214000" />
+      <workItem from="1727429285415" duration="12466000" />
     </task>
     <servers />
   </component>
@@ -96,37 +95,5 @@
   <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Form1.cs</url>
-          <line>874</line>
-          <properties documentPath="C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\BV\Form1.cs" containingFunctionPresentation="Method 'erodeImage'">
-            <startOffsets>
-              <option value="36697" />
-            </startOffsets>
-            <endOffsets>
-              <option value="36777" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="13" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="DotNet Breakpoints">
-          <url>file://$PROJECT_DIR$/Form1.cs</url>
-          <line>878</line>
-          <properties documentPath="C:\Uni\Y3\Beeldverwerking\P1\INFOIBV\BV\Form1.cs" containingFunctionPresentation="Method 'erodeImage'">
-            <startOffsets>
-              <option value="36892" />
-            </startOffsets>
-            <endOffsets>
-              <option value="36975" />
-            </endOffsets>
-          </properties>
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
