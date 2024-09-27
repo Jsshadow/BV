@@ -828,16 +828,12 @@ namespace INFOIBV
                         {
                             for (int l = -x; l <= x; l++)
                             {
-                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
+                                if (i + k >= 0 && i + k < inputImage.GetLength(0) && j + l >= 0 &&
+                                    j + l < inputImage.GetLength(1) && (structuralElement[k + x, l + x] != -1))
                                 {
-                                    break;
+                                    temp[k+x, l+x] = inputImage[i + k, j + l] + structuralElement[k+x, l+x];
+                                    
                                 }
-                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
-                                {
-                                    break;
-                                }
-                                if (structuralElement[k+x, l+x] == -1) break;
-                                temp[k+x, l+x] = inputImage[i + k, j + l] + structuralElement[k+x, l+x];
                             }
                         }
                         outputImage[i, j] = (int)getMax(PointOperationImage(temp, (i1, I, J) => (byte)i1));
