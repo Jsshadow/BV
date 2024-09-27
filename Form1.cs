@@ -210,8 +210,14 @@ namespace INFOIBV
                     int _filterSize1 = (FilterSize.SelectedIndex * 2) + 3;
                     ElementShape shape1 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
                     bool _binary1 = Binary.Checked;
+                    if (_binary1)
+                    {
+                        return intArrayToByteArray(erodeImage(byteArrayToIntArray(thresholdImage(workingImage, threshold)),
+                            structuringElement(shape1, _filterSize1, _binary1), _binary1));
+                    }
                     return intArrayToByteArray(erodeImage(byteArrayToIntArray(workingImage),
                         structuringElement(shape1, _filterSize1, _binary1), _binary1));
+                    
                 default:
                     return null;
             }
@@ -711,13 +717,38 @@ namespace INFOIBV
             switch (shape)
             {
                 case ElementShape.Square:
-                    return square;
+                    return dilateR(square, binary, x, ElementShape.Square);
                 case ElementShape.Star:
-                    return star;
+                    return dilateR(star, binary, x, ElementShape.Star);
                 default:
                     MessageBox.Show("Please enter a valid Element Shape");
                     return new int[0, 0];
             }
+        }
+
+        private int[,] dilateR(int[,] structuringElement, bool binary, int x, ElementShape shape)
+        {
+            if (x <= 0)
+            {
+                return structuringElement;
+            }
+
+            int[,] newInput = putInCenter(structuringElement.GetLength(0) + 2, structuringElement.GetLength(1) + 2,
+                structuringElement);
+            return dilateR(dilateImage(newInput, this.structuringElement(shape, 3, binary), binary), binary, x-1, shape);
+        }
+
+        private int[,] putInCenter(int nw, int nh, int[,] shape)
+        {
+            int[,] tempImg = setZeros(nw, nh);
+            for (int i = 0; i < shape.GetLength(0); i++)
+            {
+                for (int j = 0; j < shape.GetLength(1); j++)
+                {
+                    tempImg[i + 1, j + 1] = shape[i, j];
+                }
+            }
+            return tempImg;
         }
 
         private int[,] setZeros(int h, int w)
@@ -756,23 +787,17 @@ namespace INFOIBV
                 {
                     for (int j = 0; j < inputImage.GetLength(1); j++)
                     {
-                        if (inputImage[i, j] == 0) break;
-                        
-                        for (int k = -x; k <= x; k++)
+                        if (inputImage[i, j] > 127)
                         {
-                            for (int l = -x; l <= x; l++)
+                            for (int k = -x; k <= x; k++)
                             {
-                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
+                                for (int l = -x; l <= x; l++)
                                 {
-                                    break;
-                                }
-                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
-                                {
-                                    break;
-                                }
-                                if (structuralElement[k+x, l+x] == 255)
-                                {
-                                    outputImage[i + k, j + l] = 255;
+                                    if (i + k >= 0 && i + k < inputImage.GetLength(0) && j + l >= 0 &&
+                                        j + l < inputImage.GetLength(1) && structuralElement[k+x, l+x] == 255)
+                                    {
+                                        outputImage[i + k, j + l] = 255;
+                                    }
                                 }
                             }
                         }
@@ -825,15 +850,11 @@ namespace INFOIBV
                         {
                             for (int l = -x; l <= x; l++)
                             {
-                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
+                                if (i + k >= 0 && i + k < inputImage.GetLength(0) && j + l >= 0 &&
+                                    j + l < inputImage.GetLength(1))
                                 {
-                                    break;
+                                    check = ((inputImage[i + k, j + l] == 255 && structuralElement[k+x, l+x] == 255) || (inputImage[i+k, j+l] == 255 && structuralElement[k+x,l+x] == 0) || (inputImage[i+k, j+l] == 0 && structuralElement[k+x,l+x] == 0)) && check;
                                 }
-                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
-                                {
-                                    break;
-                                }
-                                check = ((inputImage[i + k, j + l] == 255 && structuralElement[k+x, l+x] == 255)|| (inputImage[i+k, j+l] == 0 && structuralElement[k+x,l+x] == 0)) && check;
                             }
                         }
                         if (check)
@@ -854,16 +875,14 @@ namespace INFOIBV
                         {
                             for (int l = -x; l <= x; l++)
                             {
-                                if (i + k < 0 || i + k >= inputImage.GetLength(0))
+                                if (i + k >= 0 && i + k < inputImage.GetLength(0) && j + l >= 0 &&
+                                    j + l < inputImage.GetLength(1) && (structuralElement[k + x, l + x] != -1))
                                 {
-                                    break;
+                                    int m = structuralElement[k + x, l + x];
+                                    int n = inputImage[i + k, j + l];
+                                    int val = n - m;
+                                    temp[k + x, l + x] = val < 0 ? 0 : inputImage[i + k, j + l] - structuralElement[k + x, l + x];
                                 }
-                                if (j + l < 0 || j + l >= inputImage.GetLength(1))
-                                {
-                                    break;
-                                }
-                                if (structuralElement[k+x, l+x] == -1) break;
-                                temp[k+x, l+x] = inputImage[i + k, j + l] - structuralElement[k+x, l+x];
                             }
                         }
                         outputImage[i, j] = (int)getMin(PointOperationImage(temp, (i1, I, J) => (byte)i1));
