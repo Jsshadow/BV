@@ -9,10 +9,8 @@
   <component name="ChangeListManager">
     <list default="true" id="7006531f-6654-4283-8f5e-a3ed503ed201" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Form1.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Form1.Designer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Form1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Form1.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.FileListAbsolute.txt" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.FileListAbsolute.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" afterDir="false" />
     </list>
@@ -39,12 +37,15 @@
   "keyToString": {
     ".NET Project.INFOIBV.executor": "Debug",
     "RunOnceActivity.ShowReadmeOnStart": "true",
+    "ToolWindowDesigner Toolbox.ShowToolbar": "false",
     "git-widget-placeholder": "master",
+    "ignore.virus.scanning.warn.message": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "WinFormsDesignerOptionsPage",
     "vue.rearranger.settings.migration": "true"
   },
   "keyToStringList": {
@@ -85,6 +86,8 @@
       <updated>1726219817959</updated>
       <workItem from="1726219820500" duration="10000" />
       <workItem from="1727265570827" duration="5210000" />
+      <workItem from="1727428656149" duration="271000" />
+      <workItem from="1727429285415" duration="4504000" />
     </task>
     <servers />
   </component>

@@ -1,4 +1,6 @@
-﻿namespace INFOIBV
+﻿using System.IO;
+
+namespace INFOIBV
 {
     partial class INFOIBV
     {
@@ -38,15 +40,19 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.comboBox = new System.Windows.Forms.ComboBox();
+            this.FilterSize = new System.Windows.Forms.ComboBox();
+            this.StructuringShape = new System.Windows.Forms.ComboBox();
+            this.Binary = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
             // 
             // LoadImageButton
             // 
-            this.LoadImageButton.Location = new System.Drawing.Point(12, 11);
+            this.LoadImageButton.Location = new System.Drawing.Point(18, 17);
+            this.LoadImageButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.LoadImageButton.Name = "LoadImageButton";
-            this.LoadImageButton.Size = new System.Drawing.Size(98, 23);
+            this.LoadImageButton.Size = new System.Drawing.Size(147, 35);
             this.LoadImageButton.TabIndex = 0;
             this.LoadImageButton.Text = "Load image...";
             this.LoadImageButton.UseVisualStyleBackColor = true;
@@ -54,32 +60,34 @@
             // 
             // openImageDialog
             // 
-            this.openImageDialog.Filter = "Bitmap files (*.bmp;*.gif;*.jpg;*.png;*.tiff;*.jpeg)|*.bmp;*.gif;*.jpg;*.png;*.ti" +
-    "ff;*.jpeg";
+            this.openImageDialog.Filter = "Bitmap files (*.bmp;*.gif;*.jpg;*.png;*.tiff;*.jpeg)|*.bmp;*.gif;*.jpg;*.png;*.ti" + "ff;*.jpeg";
             this.openImageDialog.InitialDirectory = "..\\..\\images";
             // 
             // imageFileName
             // 
-            this.imageFileName.Location = new System.Drawing.Point(116, 12);
+            this.imageFileName.Location = new System.Drawing.Point(174, 18);
+            this.imageFileName.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.imageFileName.Name = "imageFileName";
             this.imageFileName.ReadOnly = true;
-            this.imageFileName.Size = new System.Drawing.Size(329, 20);
+            this.imageFileName.Size = new System.Drawing.Size(492, 26);
             this.imageFileName.TabIndex = 1;
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(13, 45);
+            this.pictureBox1.Location = new System.Drawing.Point(20, 69);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(512, 512);
+            this.pictureBox1.Size = new System.Drawing.Size(768, 788);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox1.TabIndex = 2;
             this.pictureBox1.TabStop = false;
             // 
             // applyButton
             // 
-            this.applyButton.Location = new System.Drawing.Point(658, 11);
+            this.applyButton.Location = new System.Drawing.Point(987, 17);
+            this.applyButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.applyButton.Name = "applyButton";
-            this.applyButton.Size = new System.Drawing.Size(103, 23);
+            this.applyButton.Size = new System.Drawing.Size(154, 35);
             this.applyButton.TabIndex = 3;
             this.applyButton.Text = "Apply";
             this.applyButton.UseVisualStyleBackColor = true;
@@ -92,9 +100,10 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(948, 11);
+            this.saveButton.Location = new System.Drawing.Point(1422, 17);
+            this.saveButton.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.saveButton.Name = "saveButton";
-            this.saveButton.Size = new System.Drawing.Size(95, 23);
+            this.saveButton.Size = new System.Drawing.Size(142, 35);
             this.saveButton.TabIndex = 4;
             this.saveButton.Text = "Save as BMP...";
             this.saveButton.UseVisualStyleBackColor = true;
@@ -102,18 +111,20 @@
             // 
             // pictureBox2
             // 
-            this.pictureBox2.Location = new System.Drawing.Point(531, 45);
+            this.pictureBox2.Location = new System.Drawing.Point(796, 69);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(512, 512);
+            this.pictureBox2.Size = new System.Drawing.Size(768, 788);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.pictureBox2.TabIndex = 5;
             this.pictureBox2.TabStop = false;
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(767, 13);
+            this.progressBar.Location = new System.Drawing.Point(1150, 20);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(175, 20);
+            this.progressBar.Size = new System.Drawing.Size(262, 31);
             this.progressBar.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.progressBar.TabIndex = 6;
             this.progressBar.Visible = false;
@@ -122,16 +133,51 @@
             // 
             this.comboBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox.FormattingEnabled = true;
-            this.comboBox.Location = new System.Drawing.Point(451, 12);
+            this.comboBox.Location = new System.Drawing.Point(676, 18);
+            this.comboBox.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.comboBox.Name = "comboBox";
-            this.comboBox.Size = new System.Drawing.Size(201, 21);
+            this.comboBox.Size = new System.Drawing.Size(300, 28);
             this.comboBox.TabIndex = 7;
+            this.comboBox.SelectedIndexChanged += new System.EventHandler(this.comboBox_Click);
+            // 
+            // FilterSize
+            // 
+            this.FilterSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.FilterSize.FormattingEnabled = true;
+            this.FilterSize.Location = new System.Drawing.Point(676, 54);
+            this.FilterSize.Name = "FilterSize";
+            this.FilterSize.Size = new System.Drawing.Size(70, 28);
+            this.FilterSize.TabIndex = 8;
+            this.FilterSize.Visible = false;
+            // 
+            // StructuringShape
+            // 
+            this.StructuringShape.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.StructuringShape.FormattingEnabled = true;
+            this.StructuringShape.Location = new System.Drawing.Point(752, 54);
+            this.StructuringShape.Name = "StructuringShape";
+            this.StructuringShape.Size = new System.Drawing.Size(91, 28);
+            this.StructuringShape.TabIndex = 9;
+            this.StructuringShape.Visible = false;
+            // 
+            // Binary
+            // 
+            this.Binary.Location = new System.Drawing.Point(872, 58);
+            this.Binary.Name = "Binary";
+            this.Binary.Size = new System.Drawing.Size(104, 24);
+            this.Binary.TabIndex = 10;
+            this.Binary.Text = "Binary";
+            this.Binary.UseVisualStyleBackColor = true;
+            this.Binary.Visible = false;
             // 
             // INFOIBV
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1052, 576);
+            this.ClientSize = new System.Drawing.Size(1578, 886);
+            this.Controls.Add(this.Binary);
+            this.Controls.Add(this.StructuringShape);
+            this.Controls.Add(this.FilterSize);
             this.Controls.Add(this.comboBox);
             this.Controls.Add(this.progressBar);
             this.Controls.Add(this.pictureBox2);
@@ -148,8 +194,12 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
-
         }
+
+        private System.Windows.Forms.ComboBox StructuringShape;
+        private System.Windows.Forms.ComboBox FilterSize;
+        private System.Windows.Forms.ComboBox comboBox2;
+        private System.Windows.Forms.CheckBox Binary;
 
         #endregion
 

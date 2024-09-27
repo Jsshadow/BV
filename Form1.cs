@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 
 namespace INFOIBV
@@ -59,6 +60,8 @@ namespace INFOIBV
         {
             InitializeComponent();
             populateCombobox();
+            populateFilterSize();
+            populateShapes();
         }
 
         /*
@@ -72,6 +75,25 @@ namespace INFOIBV
                 comboBox.Items.Add(ItemNameSpaces);
             }
             comboBox.SelectedIndex = 0;
+        }
+
+        private void populateFilterSize()
+        {
+            for (int i = 3; i < 15; i+=2)
+            {
+                FilterSize.Items.Add(i);
+            }
+            FilterSize.SelectedIndex = 0;
+        }
+
+        private void populateShapes()
+        {
+            foreach (string shape in Enum.GetNames(typeof(ElementShape)))
+            {
+                string _shape = Regex.Replace(Regex.Replace(shape, @"(\P{Ll})(\P{Ll}\p{Ll})", "$1 $2"), @"(\p{Ll})(\P{Ll})", "$1 $2");
+                StructuringShape.Items.Add(_shape);
+            }
+            StructuringShape.SelectedIndex = 0;
         }
 
         /*
@@ -90,6 +112,22 @@ namespace INFOIBV
                     MessageBox.Show("Error in image dimensions (have to be > 0 and <= 512)");
                 else
                     pictureBox1.Image = (Image) InputImage;                 // display input image
+            }
+        }
+
+        private void comboBox_Click(object sender, EventArgs e)
+        {
+            if (comboBox.SelectedIndex == 14 || comboBox.SelectedIndex == 15)
+            {
+                FilterSize.Visible = true;
+                StructuringShape.Visible = true;
+                Binary.Visible = true;
+            }
+            else
+            {
+                FilterSize.Visible = false;
+                StructuringShape.Visible = false;
+                Binary.Visible = false;
             }
         }
 
@@ -163,11 +201,17 @@ namespace INFOIBV
                 case ProcessingFunctions.Pipeline3_5:
                     return pipeline3_5(workingImage, horizontalKernel, verticalKernel, pipelineThreshold);
                 case ProcessingFunctions.Dilate:
+                    int _filterSize = (FilterSize.SelectedIndex * 2) + 3;
+                    ElementShape shape = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
+                    bool _binary = Binary.Checked;
                     return intArrayToByteArray(dilateImage(byteArrayToIntArray(workingImage),
-                        structuringElement(ElementShape.Square, 3, true), true));
+                        structuringElement(shape, _filterSize, _binary), _binary));
                 case ProcessingFunctions.Erode:
+                    int _filterSize1 = (FilterSize.SelectedIndex * 2) + 3;
+                    ElementShape shape1 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
+                    bool _binary1 = Binary.Checked;
                     return intArrayToByteArray(erodeImage(byteArrayToIntArray(workingImage),
-                        structuringElement(ElementShape.Square, 3, true), true));
+                        structuringElement(shape1, _filterSize1, _binary1), _binary1));
                 default:
                     return null;
             }
@@ -833,6 +877,5 @@ namespace INFOIBV
         // ====================================================================
         // ============= YOUR FUNCTIONS FOR ASSIGNMENT 3 GO HERE ==============
         // ====================================================================
-
     }
 }
