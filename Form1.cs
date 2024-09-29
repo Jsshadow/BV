@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
-using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
+using System.Windows.Forms.VisualStyles;
 
 namespace INFOIBV
 {
@@ -40,10 +40,12 @@ namespace INFOIBV
             Dilate,
             Erode,
             Open,
-            Close
+            Close,
+            CountValues,
+            TraceBoundary
         }
 
-        private enum ElementShape
+        public enum ElementShape
         {
             Square,
             Star
@@ -170,7 +172,7 @@ namespace INFOIBV
         private byte[,] applyProcessingFunction(byte[,] workingImage)
         {
             sbyte[,] horizontalKernel = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};                       // Define this kernel yourself
-            sbyte[,] verticalKernel = {{-1, -2, -1},{0, 0, 0},{1, 2, 1}};                         // Define this kernel yourself
+            sbyte[,] verticalKernel = {{-1, -2, -1},{0, 0, 0},{1, 2, 1}};                           // Define this kernel yourself
             switch ((ProcessingFunctions)comboBox.SelectedIndex)
             {
                 case ProcessingFunctions.Grayscale:
@@ -205,32 +207,39 @@ namespace INFOIBV
                 case ProcessingFunctions.Dilate:
                     int _filterSize = (FilterSize.SelectedIndex * 2) + 3;
                     ElementShape shape = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
-                    bool _binary = Binary.Checked;
-                    return intArrayToByteArray(dilateImage(byteArrayToIntArray(workingImage),
-                        structuringElement(shape, _filterSize, _binary), _binary));
+                    StructuringElement H = new StructuringElement(shape, _filterSize);
+                    return Binary.Checked
+                        ? (new BinaryImage(workingImage) + H).ToByteArray()
+                        : (new GrayScaleImage(workingImage) + H).ToByteArray();
+
                 case ProcessingFunctions.Erode:
-                    int _filterSize1 = (FilterSize.SelectedIndex * 2) + 3;
-                    ElementShape shape1 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
-                    bool _binary1 = Binary.Checked;
-                    if (_binary1)
-                    {
-                        return intArrayToByteArray(erodeImage(byteArrayToIntArray(thresholdImage(workingImage, threshold)),
-                            structuringElement(shape1, _filterSize1, _binary1), _binary1));
-                    }
-                    return intArrayToByteArray(erodeImage(byteArrayToIntArray(workingImage),
-                        structuringElement(shape1, _filterSize1, _binary1), _binary1));
-                case ProcessingFunctions.Open:
                     int _filterSize2 = (FilterSize.SelectedIndex * 2) + 3;
                     ElementShape shape2 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
-                    bool _binary2 = Binary.Checked;
-                    return intArrayToByteArray(openImage(byteArrayToIntArray(workingImage),
-                        structuringElement(shape2, _filterSize2, _binary2), _binary2));
-                case ProcessingFunctions.Close:
+                    StructuringElement H2 = new StructuringElement(shape2, _filterSize2);
+                    return Binary.Checked
+                        ? (new BinaryImage(workingImage) - H2).ToByteArray()
+                        : (new GrayScaleImage(workingImage) - H2).ToByteArray();
+                case ProcessingFunctions.Open:
                     int _filterSize3 = (FilterSize.SelectedIndex * 2) + 3;
                     ElementShape shape3 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
-                    bool _binary3 = Binary.Checked;
-                    return intArrayToByteArray(openImage(byteArrayToIntArray(workingImage),
-                        structuringElement(shape3, _filterSize3, _binary3), _binary3));
+                    StructuringElement H3 = new StructuringElement(shape3, _filterSize3);
+                    return Binary.Checked
+                        ? (new BinaryImage(workingImage) * H3).ToByteArray()
+                        : (new GrayScaleImage(workingImage) * H3).ToByteArray();
+                case ProcessingFunctions.Close:
+                    int _filterSize4 = (FilterSize.SelectedIndex * 2) + 3;
+                    ElementShape shape4 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
+                    StructuringElement H4 = new StructuringElement(shape4, _filterSize4);
+                    return Binary.Checked
+                        ? (new BinaryImage(workingImage) / H4).ToByteArray()
+                        : (new GrayScaleImage(workingImage) / H4).ToByteArray();
+                case ProcessingFunctions.CountValues:
+                    GrayScaleImage I = new GrayScaleImage(workingImage);
+                    var c = I.countValues();
+                    return I.ToByteArray();
+                case ProcessingFunctions.TraceBoundary:
+                    BinaryImage I2 = new BinaryImage(workingImage);
+                    return I2.traceBoundary().ToByteArray();
                 default:
                     return null;
             }
@@ -238,12 +247,12 @@ namespace INFOIBV
 
         int[,] byteArrayToIntArray(byte[,] bytes)
         {
-            return PointOperationImage(bytes, (b, i, arg3) => (int)b);
+            return map2D(bytes, b => (int)b);
         }
 
         byte[,] intArrayToByteArray(int[,] ints)
         {
-            return PointOperationImage(ints, (i, i1, arg3) => (byte)i);
+            return map2D(ints, i => (byte)i);
         }
 
 
@@ -289,6 +298,55 @@ namespace INFOIBV
 
             return tempImage;
         }
+        //user definded classes and generic functions
+        private static A[,] map2dIndexed<T,A>(T[,] inputImage,Func<T,int,int,A> operation)
+        {
+            A [,] tempImage = new A [inputImage.GetLength(0), inputImage.GetLength(1)];
+
+            for (int i = 0; i < inputImage.GetLength(0); i++) 
+            { 
+                for (int j = 0; j < inputImage.GetLength(1); j++)
+                {
+                    tempImage[i, j] = operation(inputImage[i, j],i,j);
+                } 
+            }
+            return tempImage;
+        }
+        private static A[,] map2D<T,A>(T[,] inputImage,Func<T,A> operation)
+        {
+            A [,] tempImage = new A [inputImage.GetLength(0), inputImage.GetLength(1)];
+
+            for (int i = 0; i < inputImage.GetLength(0); i++) 
+            { 
+                for (int j = 0; j < inputImage.GetLength(1); j++)
+                {
+                    tempImage[i, j] = operation(inputImage[i, j]);
+                } 
+            }
+            return tempImage;
+        }
+        private static TB Foldl2D<TA, TB>(Func<TA, TB, TB> f,TB startV, TA[,] filter)
+        {
+            foreach (TA v in filter)
+            {
+                startV = f(v,startV);
+            }
+            return startV;
+        }
+        
+        private static TB Foldr2D<TA, TB>(Func<TA, TB, TB> f,TB startV, TA[,] filter)
+        {
+            IEnumerable<TA> enumerableThing = filter.Cast<TA>();
+            foreach (TA v in enumerableThing.Reverse())
+            {
+                startV = f(v,startV);
+            }
+            return startV;
+        }
+        private static IEnumerable<(int x,int y)> EnumerableRange2D(int a, int b)
+        {
+            return from u in Enumerable.Range(0,a) from v in Enumerable.Range(0,b) select (u, v);
+        }
 
 
         // ====================================================================
@@ -303,55 +361,10 @@ namespace INFOIBV
         private byte[,] invertImage(byte[,] inputImage)
         {
             // create temporary grayscale image
-            byte[,] tempImage = new byte[inputImage.GetLength(0), inputImage.GetLength(1)];
-
-            tempImage = PointOperationImage(inputImage, (b, x, y) => (byte)(255 - b));
-            
-            return tempImage;
+            GrayScaleImage tempImage = new GrayScaleImage(new byte[inputImage.GetLength(0), inputImage.GetLength(1)]);
+            tempImage.Apply(p => 255 - p);
+            return tempImage.ToByteArray();
         }
-        private A[,] PointOperationImage<T,A>(T[,] inputImage,Func<T,int,int,A> operation)
-        {
-            A [,] tempImage = new A [inputImage.GetLength(0), inputImage.GetLength(1)];
-
-            for (int i = 0; i < inputImage.GetLength(0); i++) 
-            { 
-                for (int j = 0; j < inputImage.GetLength(1); j++)
-                {
-                    tempImage[i, j] = operation(inputImage[i, j],i,j);
-                } 
-            }
-            return tempImage;
-        }
-
-        private TB FoldlFilter<TA, TB>(Func<TA, TB, TB> f,TB startV, TA[,] filter)
-        {
-            foreach (TA v in filter)
-            {
-                startV = f(v,startV);
-            }
-            return startV;
-        }
-        
-        private TB FoldrFilter<TA, TB>(Func<TA, TB, TB> f,TB startV, TA[,] filter)
-        {
-            IEnumerable<TA> enumerableThing = filter.Cast<TA>();
-            foreach (TA v in enumerableThing.Reverse())
-            {
-                startV = f(v,startV);
-            }
-            return startV;
-        }
-
-        private byte getMax(byte[,] img)
-        {
-            return FoldlFilter((v, a) => v > a ? v : a, Byte.MinValue, img);
-        }
-        private byte getMin(byte[,] img)
-        {
-            return FoldlFilter((v, a) => v < a ? v : a, Byte.MaxValue, img);
-        }
-        
-
         /*
          * adjustContrast: create an image with the full range of intensity values used
          * input:   inputImage          single-channel (byte) image
@@ -360,9 +373,9 @@ namespace INFOIBV
         private byte[,] adjustContrast(byte[,] inputImage)
         {
             // create temporary grayscale image
-            byte[,] tempImage = new byte[inputImage.GetLength(0), inputImage.GetLength(1)];
-            byte high = getMax(inputImage);
-            byte low = getMin(inputImage);
+            GrayScaleImage tempImage = new GrayScaleImage(new byte[inputImage.GetLength(0), inputImage.GetLength(1)]);
+            byte high = tempImage.getMax(inputImage);
+            byte low = tempImage.getMin(inputImage);
             byte min = Byte.MinValue;
             byte max = Byte.MaxValue;
 
@@ -380,7 +393,7 @@ namespace INFOIBV
                 }
             }
             
-            return tempImage;
+            return tempImage.ToByteArray();
         }
         
 
@@ -422,7 +435,7 @@ namespace INFOIBV
         private byte[,] convolveImage(byte[,] inputImage, float[,] filter)
         {
             // create temporary grayscale image
-            byte[,] tempImage = new byte[inputImage.GetLength(0), inputImage.GetLength(1)];
+            GrayScaleImage tempImage = new GrayScaleImage(new Byte[inputImage.GetLength(0), inputImage.GetLength(1)]);
 
             for (int u = 0; u < inputImage.GetLength(0); u++) 
             { 
@@ -432,7 +445,7 @@ namespace INFOIBV
                 } 
             }
 
-            return tempImage;
+            return tempImage.ToByteArray();
         }
 
         private float Clamp(float input)
@@ -529,23 +542,16 @@ namespace INFOIBV
         private byte[,] edgeMagnitude(byte[,] inputImage, sbyte[,] horizontalKernel, sbyte[,] verticalKernel)
         {
             // create temporary grayscale image
-            byte[,] tempImage = new byte[inputImage.GetLength(0), inputImage.GetLength(1)];
+            GrayScaleImage tempImage = new GrayScaleImage(new byte[inputImage.GetLength(0), inputImage.GetLength(1)]);
 
-            float[,] fhk = PointOperationImage(horizontalKernel, (b, x, y) => (float)0.5*b);
-            float[,] fvk = PointOperationImage(verticalKernel, (b, x, y) => (float)0.5*b);
+            float[,] fhk = map2D(horizontalKernel, b=> (float)0.5*b);
+            float[,] fvk = map2D(verticalKernel, b => (float)0.5*b);
             
             byte[,] h = convolveImage(inputImage, fhk);
             byte[,] v = convolveImage(inputImage, fvk);
 
-            for (int i = 0; i < inputImage.GetLength(0); i++)
-            {
-                for (int j = 0; j < inputImage.GetLength(1); j++)
-                {
-                    tempImage[i, j] = (byte)Math.Sqrt((h[i,j] * h[i,j]) + (v[i,j] * v[i,j]));
-                }
-            }
-
-            return tempImage;
+            tempImage.ApplyIndexed((p, i, j) => (int)Math.Sqrt((h[i, j] * h[i, j]) + (v[i, j] * v[i, j])));
+            return tempImage.ToByteArray();
         }
 
 
@@ -557,18 +563,11 @@ namespace INFOIBV
         private byte[,] thresholdImage(byte[,] inputImage, byte threshold)
         {
             // create temporary grayscale image
-            byte[,] tempImage = new byte[inputImage.GetLength(0), inputImage.GetLength(1)];
+            GrayScaleImage tempImage = new GrayScaleImage(new byte[inputImage.GetLength(0), inputImage.GetLength(1)]);
 
-            for (int i = 0; i < inputImage.GetLength(0); i++)
-            {
-                for (int j = 0; j < inputImage.GetLength(1); j++)
-                {
-                    if (inputImage[i, j] > threshold) tempImage[i, j] = byte.MaxValue;
-                    else tempImage[i, j] = byte.MinValue;
-                } 
-            }
+            tempImage.ApplyIndexed(((p, i, j) => inputImage[i,j]>threshold?byte.MaxValue:byte.MinValue));
             
-            return tempImage;
+            return tempImage.ToByteArray();
         }
 
         private byte[,] pipeline1(byte[,] inputImage, float sigma, sbyte[,] horizontalKernel, sbyte[,] verticalKernel, byte threshold)
@@ -641,105 +640,255 @@ namespace INFOIBV
         // ============= YOUR FUNCTIONS FOR ASSIGNMENT 2 GO HERE ==============
         // ====================================================================
 
-        private int[,] andImage(int[,] image1, int[,] image2)
+        public abstract class Imager<TA>
         {
-            if ((image1.GetLength(0) != image2.GetLength(0) || (image1.GetLength(1) != image2.GetLength(1))))
+            protected TA[,] Ar;
+            protected HashSet<(int u, int v)> Cps;//coordinate points
+            public virtual TA this[int u,int v]
             {
-                MessageBox.Show("Images are not the same size");
-                return (new int[0,0]);
+                get => Ar[u, v];
+                set => Ar[u, v] = value;
             }
 
-            bool intToBool(int value)
+            public int GetLength(int d)
             {
-                if (value > threshold) return true;
-                return false;
-            }
-            int boolToInt(bool value)
-            {
-                if (value) return 255;
-                return 0;
+                return Ar.GetLength(d);
             }
 
-            bool[,] boolImg1 = PointOperationImage(image1, (b, i, j) => intToBool(b));
-            bool[,] boolImg2 = PointOperationImage(image2, (b, i, j) => intToBool(b));
-            bool[,] boolImgF = new bool[boolImg1.GetLength(0), boolImg1.GetLength(1)];
-            for (int i = 0; i < boolImg1.GetLength(0); i++)
+            public void Apply(Func<TA,TA> op)
             {
-                for (int j = 0; j < boolImg1.GetLength(1); j++)
+                Ar = map2D(Ar, op);
+            }
+            public void ApplyIndexed(Func<TA,int,int,TA> op)
+            {
+                Ar = map2dIndexed(Ar, op);
+            }
+            public static TA[,] BinaryOp(Imager<TA> a,Imager<TA> b, Func<TA, TA, TA> op)
+            {
+                if (b.GetLength(0) != a.Ar.GetLength(0) && b.GetLength(1) != a.Ar.GetLength(1))
                 {
-                    boolImgF[i, j] = boolImg1[i, j] && boolImg2[i, j];
+                    MessageBox.Show("Error in image dimensions (have to be the same)");
+                    throw new Exception("Error in image dimensions (have to be the same)");
+                }
+                TA[,] oar = map2dIndexed(a.Ar, ((p1, i, j) => op(p1, b[i, j])));
+                return oar;
+            }
+            //coordinate pairs
+            public void UpdateCps()
+            {
+                Cps = new HashSet<(int u, int v)>(EnumerableRange2D(Ar.GetLength(0),Ar.GetLength(1))).ToHashSet();
+            }
+
+            public void TranslateImage(int x, int y)
+            {
+                Cps = Cps.Select(p => (p.u + x, p.v + y)).ToHashSet();
+            }
+
+            public bool InImage(int x, int y)
+            {
+                return x >= 0 && x < Ar.GetLength(0) && y >= 0 && y < Ar.GetLength(1);
+            }
+
+            public virtual byte[,] ToByteArray()
+            {
+                return map2D(Ar, p => (byte) Convert.ChangeType(p,typeof(byte)));
+            }
+        }
+
+        public class BinaryImage : Imager<bool>
+        {
+            public HashSet<(int u, int v)> Qi;
+            public BinaryImage(byte[,] image)
+            {
+                Ar = map2D(image, p => Convert.ToBoolean(p));
+                UpdateCps();
+                Qi = new HashSet<(int, int)>(Cps.Where(p => this[p.u, p.v]));
+            }
+            public BinaryImage(int[,] image)
+            {
+                Ar = map2D(image, p => Convert.ToBoolean(p));
+                UpdateCps();
+                Qi = new HashSet<(int, int)>(Cps.Where(p => this[p.u, p.v]));
+            }
+            public BinaryImage(bool[,] image)
+            {
+                Ar = image;
+                UpdateCps();
+                Qi = new HashSet<(int, int)>(Cps.Where(p => this[p.u, p.v]));
+            }
+
+            public BinaryImage(HashSet<(int u, int v)> ps,int h,int v)
+            {
+                Ar = new bool[h,v];
+                foreach (var p in ps){Ar[p.u, p.v] = true;}
+                UpdateCps(); 
+                Qi = ps;
+            }
+
+            public static BinaryImage operator &(BinaryImage a, BinaryImage b)
+            {
+                return new BinaryImage(BinaryOp(a, b, ((p1, p2) => p1 && p2)));
+            }
+            public static BinaryImage operator |(BinaryImage a, BinaryImage b)
+            {
+                return new BinaryImage(BinaryOp(a, b, ((p1, p2) => p1 || p2)));
+            }
+            public static bool operator false(BinaryImage a) => !Foldl2D(((p1, p2) => p2 || p1), false, a.Ar);
+            public static bool operator true(BinaryImage a) => Foldl2D(((p1, p2) => p2 && p1), true, a.Ar);
+            
+            public static BinaryImage operator +(BinaryImage i, StructuringElement h) //dilation
+            {
+                return new BinaryImage((from p in i.Qi from q in h.Qh select (p.u+q.u,p.v+q.v))
+                    .Where((x) => i.InImage(x.Item1, x.Item2)).ToHashSet()
+                    ,i.GetLength(0),i.GetLength(1));
+            }
+            
+            public static BinaryImage operator -(BinaryImage i, StructuringElement h) //erosion
+            {
+                HashSet<(int ,int)> T((int u,int v)p) => h.Qh.Select(q => (q.u+p.u,q.v+p.v))
+                    .Where((x) => i.InImage(x.Item1,x.Item2)).ToHashSet();
+                return new BinaryImage((from p in i.Qi where(T(p).IsSubsetOf(i.Qi)) select p)
+                    .Where((x) => i.InImage(x.Item1,x.Item2)).ToHashSet()
+                    ,i.GetLength(0),i.GetLength(1));
+            }
+
+            public static BinaryImage operator *(BinaryImage i, StructuringElement h) => i - h + h; //opening
+            public static BinaryImage operator /(BinaryImage i, StructuringElement h) => i + h - h; //closing
+
+            public static BinaryImage operator ~(BinaryImage i)
+            {
+                return new BinaryImage(i.Cps.Except(i.Qi).ToHashSet(), i.GetLength(0), i.GetLength(1));
+            }
+
+            public BinaryImage traceBoundary()
+            {
+                StructuringElement h = new StructuringElement(ElementShape.Star, 3);
+                return new BinaryImage(Qi.Intersect((~(this - h)).Qi).ToHashSet(),this.GetLength(0),this.GetLength(1));
+            }
+
+            public override byte[,] ToByteArray()
+            {
+                return map2D(Ar, p => p?byte.MaxValue:byte.MinValue);
+            }
+        }
+        public class GrayScaleImage : Imager<int>
+        {
+            public GrayScaleImage(byte[,] image)
+            {
+                Ar = map2D(image, p => (int) p);
+                UpdateCps();
+            }
+            public GrayScaleImage(int[,] image)
+            {
+                Ar = image;
+                UpdateCps();
+            }
+            public byte getMax(byte[,] img)
+            {
+                return Foldl2D((v, a) => v > a ? v : a, byte.MinValue, img);
+            }
+            public byte getMin(byte[,] img)
+            {
+                return Foldl2D((v, a) => v < a ? v : a, byte.MaxValue, img);
+            }
+
+            public (int, Dictionary<int, int>) countValues()
+            {
+                Dictionary<int, int> Count(int v, Dictionary<int, int> counter)
+                {
+                    if (counter.ContainsKey(v)) {counter[v]++;}
+                    else { counter.Add(v, 1); }
+                    return counter;
+                }
+                var d = Foldl2D(Count
+                    ,new Dictionary<int,int>()
+                    , Ar);
+                return (d.Count, d);
+            }
+            
+            public static GrayScaleImage operator +(GrayScaleImage i, StructuringElement h) //dilation
+            {
+                int[,] ni = new int[i.Ar.GetLength(0),i.Ar.GetLength(1)];
+                foreach (var p in i.Cps)
+                {
+                    ni[p.u, p.v] = h.Qh.Max((q => i.InImage(p.u+q.u,p.v+q.v)?i[p.u+q.u,p.v+q.v] + h[q.u,q.v]:0));
+                }
+                return new GrayScaleImage(ni);
+            }
+            
+            public static GrayScaleImage operator -(GrayScaleImage i, StructuringElement h) //dilation
+            {
+                int[,] ni = new int[i.Ar.GetLength(0),i.Ar.GetLength(1)];
+                foreach (var p in i.Cps)
+                {
+                    ni[p.u, p.v] = h.Qh.Min((q => i.InImage(p.u+q.u,p.v+q.v)?i[p.u+q.u,p.v+q.v] + h[q.u,q.v]:0));
+                }
+                return new GrayScaleImage(ni);
+            }
+            public static GrayScaleImage operator *(GrayScaleImage i, StructuringElement h) => i - h + h; //opening
+            public static GrayScaleImage operator /(GrayScaleImage i, StructuringElement h) => i + h - h; //closing
+        }
+        public class StructuringElement : Imager<int>
+        {
+            public HashSet<(int u , int v)> Qh;
+            private (int x,int y) offset;
+            private (int x,int y) Offset
+            {
+                get => offset;
+                set => offset = (-(value.x - 1) / 2, -(value.y - 1) / 2);
+            }
+
+            public StructuringElement(ElementShape shape,int size)
+            {
+                if (size % 2 == 0)
+                {
+                    MessageBox.Show("Element Size is even, please enter an odd element size");
+                    throw new Exception(">:(");
+                }
+                Ar = shape == ElementShape.Square ? new [,] {{1,1,1},{1,1,1},{1,1,1}} : new [,] {{-1,1,-1},{1,1,1},{-1,1,-1}};
+                UpdateCps();
+                Offset = (3, 3);
+                TranslateImage(offset.x,offset.y);
+                Qh = new HashSet<(int, int)>(Cps.Where(p => this[p.u, p.v] == 1));
+                int x = (size - 3) / 2;
+                if (x > 0)
+                {
+                    var s = Enumerable.Range(0, x).Aggregate(this, (se, _) => se + new StructuringElement(shape, 3));
+                    Qh = s.Qh;
+                    Cps = s.Cps;
+                    Ar = s.Ar;
                 }
             }
 
-            return PointOperationImage(boolImgF, (b, i, j) => boolToInt(b));
+            public StructuringElement(HashSet<(int u, int v)> ps,int h,int v)
+            {
+                Ar = new int[h,v];
+                Offset = (h, v);
+                foreach (var p in ps){this[p.u, p.v] = 1;}
+                UpdateCps(); 
+                Qh = ps;
+            }
+
+            public override int this[int u, int v]
+            {
+                get => base[u-offset.x, v-offset.y];
+                set => base[u-offset.x, v-offset.y] = value;
+            }
+            
+            public static StructuringElement operator +(StructuringElement h1, StructuringElement h2) //dilation
+            {
+                var h3 = (from p in h1.Qh from q in h2.Qh select (p.u+q.u,p.v+q.v))
+                    .Where((x) => h1.InImage(x.Item1, x.Item2)).ToHashSet();
+                return new StructuringElement(h3,h3.Max(p => Math.Abs(p.Item1)*2+1),h3.Max(p => Math.Abs(p.Item2)*2+1));
+            }
         }
-        
-        private int[,] orImage(int[,] image1, int[,] image2)
+
+        private StructuringElement createStructuringElement(ElementShape shape, int size, bool binary)
         {
-            if ((image1.GetLength(0) != image2.GetLength(0) || (image1.GetLength(1) != image2.GetLength(1))))
-            {
-                MessageBox.Show("Images are not the same size");
-                return (new int[0,0]);
-            }
-
-            bool intToBool(int value)
-            {
-                if (value > threshold) return true;
-                return false;
-            }
-            int boolToInt(bool value)
-            {
-                if (value) return 255;
-                return 0;
-            }
-
-            bool[,] boolImg1 = PointOperationImage(image1, (b, i, j) => intToBool(b));
-            bool[,] boolImg2 = PointOperationImage(image2, (b, i, j) => intToBool(b));
-            bool[,] boolImgF = new bool[boolImg1.GetLength(0), boolImg1.GetLength(1)];
-            for (int i = 0; i < boolImg1.GetLength(0); i++)
-            {
-                for (int j = 0; j < boolImg1.GetLength(1); j++)
-                {
-                    boolImgF[i, j] = boolImg1[i, j] || boolImg2[i, j];
-                }
-            }
-
-            return PointOperationImage(boolImgF, (b, i, j) => boolToInt(b));
+            return new StructuringElement(shape, size);
         }
 
-        //max of image one plus image two (for edges ignore parts that fall outside the range)
-        private int[,] maxImage(int[,] image1, int[,] image2)
-        {
-            return new int[0, 0];
-        }
-        //for min:
-        //smallest difference between image1[i,j] and image2[i,j]
-
-        private int[,] structuringElement(ElementShape shape, int size, bool binary)
-        {
-            if (size % 2 == 0)
-            {
-                MessageBox.Show("Element Size is even, please enter an odd element size");
-                return new int[0, 0];
-            }
-            int x = (size - 3) / 2;
-            int max = 255;
-            int min = 0;
-            int[,] square = binary ? new [,] {{max,max,max},{max,max,max},{max,max,max}} : new [,] {{1,1,1},{1,1,1},{1,1,1}};
-            int[,] star = binary ? new [,] {{min,max,min}, {max,max,max}, {min,max,min}} : new [,] {{-1,1,-1},{1,1,1},{-1,1,-1}};
-            switch (shape)
-            {
-                case ElementShape.Square:
-                    return dilateR(square, binary, x, ElementShape.Square);
-                case ElementShape.Star:
-                    return dilateR(star, binary, x, ElementShape.Star);
-                default:
-                    MessageBox.Show("Please enter a valid Element Shape");
-                    return new int[0, 0];
-            }
-        }
-
-        private int[,] dilateR(int[,] structuringElement, bool binary, int x, ElementShape shape)
+        /*private int[,] dilateR(int[,] structuringElement, bool binary, int x, ElementShape shape)
         {
             if (x <= 0)
             {
@@ -836,7 +985,7 @@ namespace INFOIBV
                                 }
                             }
                         }
-                        outputImage[i, j] = (int)getMax(PointOperationImage(temp, (i1, I, J) => (byte)i1));
+                        //outputImage[i, j] = (int)getMax(PointOperationImage(temp, (i1, I, J) => (byte)i1));
                     }
                 }
             }
@@ -894,7 +1043,7 @@ namespace INFOIBV
                                 }
                             }
                         }
-                        outputImage[i, j] = (int)getMin(PointOperationImage(temp, (i1, I, J) => (byte)i1));
+                        outputImage[i, j] = (int)//getMin(PointOperationImage(temp, (i1, I, J) => (byte)i1));
                     }
                 }
             }
@@ -929,5 +1078,7 @@ namespace INFOIBV
         // ====================================================================
         // ============= YOUR FUNCTIONS FOR ASSIGNMENT 3 GO HERE ==============
         // ====================================================================
+    */
     }
+
 }
