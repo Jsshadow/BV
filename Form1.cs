@@ -821,7 +821,7 @@ namespace INFOIBV
                 int[,] ni = new int[i.Ar.GetLength(0),i.Ar.GetLength(1)];
                 foreach (var p in i.Cps)
                 {
-                    ni[p.u, p.v] = h.Qh.Min((q => i.InImage(p.u+q.u,p.v+q.v)?i[p.u+q.u,p.v+q.v] + h[q.u,q.v]:0));
+                    ni[p.u, p.v] = h.Qh.Min((q => i.InImage(p.u+q.u,p.v+q.v)?i[p.u+q.u,p.v+q.v] + h[q.u,q.v]:int.MaxValue));
                 }
                 return new GrayScaleImage(ni);
             }
