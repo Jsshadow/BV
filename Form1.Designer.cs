@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Microsoft.Win32;
 
 namespace INFOIBV
 {
@@ -43,6 +44,7 @@ namespace INFOIBV
             this.FilterSize = new System.Windows.Forms.ComboBox();
             this.StructuringShape = new System.Windows.Forms.ComboBox();
             this.Binary = new System.Windows.Forms.CheckBox();
+            this.LoadImage2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -170,11 +172,23 @@ namespace INFOIBV
             this.Binary.UseVisualStyleBackColor = true;
             this.Binary.Visible = false;
             // 
+            // LoadImage2
+            // 
+            this.LoadImage2.Location = new System.Drawing.Point(18, 54);
+            this.LoadImage2.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.LoadImage2.Name = "LoadImage2";
+            this.LoadImage2.Size = new System.Drawing.Size(147, 35);
+            this.LoadImage2.TabIndex = 11;
+            this.LoadImage2.Text = "Load Image 2..";
+            this.LoadImage2.UseVisualStyleBackColor = true;
+            this.LoadImage2.Click += new System.EventHandler(this.loadImageButton2_Click);
+            // 
             // INFOIBV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1578, 886);
+            this.Controls.Add(this.LoadImage2);
             this.Controls.Add(this.Binary);
             this.Controls.Add(this.StructuringShape);
             this.Controls.Add(this.FilterSize);
@@ -196,6 +210,7 @@ namespace INFOIBV
             this.PerformLayout();
         }
 
+        private System.Windows.Forms.Button LoadImage2;
         private System.Windows.Forms.ComboBox StructuringShape;
         private System.Windows.Forms.ComboBox FilterSize;
         private System.Windows.Forms.ComboBox comboBox2;

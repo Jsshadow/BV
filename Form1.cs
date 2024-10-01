@@ -15,6 +15,7 @@ namespace INFOIBV
     public partial class INFOIBV : Form
     {
         private Bitmap InputImage;
+        private Bitmap InputImage2;
         private Bitmap OutputImage;
 
         /*
@@ -37,6 +38,8 @@ namespace INFOIBV
             Pipeline3_3,
             Pipeline3_4,
             Pipeline3_5,
+            And,
+            Or,
             Dilate,
             Erode,
             Open,
@@ -106,7 +109,7 @@ namespace INFOIBV
         private void loadImageButton_Click(object sender, EventArgs e)
         {
            if (openImageDialog.ShowDialog() == DialogResult.OK)             // open file dialog
-            {
+           {
                 string file = openImageDialog.FileName;                     // get the file name
                 imageFileName.Text = file;                                  // show file name
                 if (InputImage != null) InputImage.Dispose();               // reset image
@@ -116,22 +119,46 @@ namespace INFOIBV
                     MessageBox.Show("Error in image dimensions (have to be > 0 and <= 512)");
                 else
                     pictureBox1.Image = (Image) InputImage;                 // display input image
+           }
+        }
+        private void loadImageButton2_Click(object sender, EventArgs e)
+        {
+            if (openImageDialog.ShowDialog() == DialogResult.OK)             // open file dialog
+            {
+                string file = openImageDialog.FileName;                     // get the file name
+                imageFileName.Text = file;                                  // show file name
+                if (InputImage2 != null) InputImage2.Dispose();               // reset image
+                InputImage2 = new Bitmap(file);                              // create new Bitmap from file
+                if (InputImage2.Size.Height <= 0 || InputImage2.Size.Width <= 0 ||
+                    InputImage2.Size.Height > 512 || InputImage2.Size.Width > 512) // dimension check (may be removed or altered)
+                    MessageBox.Show("Error in image dimensions (have to be > 0 and <= 512)");
+                //else
+                    //pictureBox2.Image = (Image) InputImage2;                 // display input image
             }
         }
 
         private void comboBox_Click(object sender, EventArgs e)
         {
-            if (comboBox.SelectedIndex == 14 || comboBox.SelectedIndex == 15 || comboBox.SelectedIndex == 16 || comboBox.SelectedIndex == 17)
+            if (comboBox.SelectedIndex == 16 || comboBox.SelectedIndex == 17 || comboBox.SelectedIndex == 18 || comboBox.SelectedIndex == 19)
             {
                 FilterSize.Visible = true;
                 StructuringShape.Visible = true;
                 Binary.Visible = true;
+                LoadImage2.Visible = false;
+            }
+            else if (comboBox.SelectedIndex == 14 || comboBox.SelectedIndex == 15)
+            {
+                FilterSize.Visible = false;
+                StructuringShape.Visible = false;
+                Binary.Visible = false;
+                LoadImage2.Visible = true;
             }
             else
             {
                 FilterSize.Visible = false;
                 StructuringShape.Visible = false;
                 Binary.Visible = false;
+                LoadImage2.Visible = false;
             }
         }
 
@@ -141,35 +168,76 @@ namespace INFOIBV
          */
         private void applyButton_Click(object sender, EventArgs e)
         {
-            if (InputImage == null) return;                                 // get out if no input image
-            if (OutputImage != null) OutputImage.Dispose();                 // reset output image
-            OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height); // create new output image
-            Color[,] Image = new Color[InputImage.Size.Width, InputImage.Size.Height]; // create array to speed-up operations (Bitmap functions are very slow)
+            if (comboBox.SelectedIndex == 14 || comboBox.SelectedIndex == 15)
+            {
+                if (InputImage == null || InputImage2 == null) return; // get out if no input image
+                if (OutputImage != null) OutputImage.Dispose(); // reset output image
+                OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height); // create new output image
+                Color[,]
+                    Image1 = new Color[InputImage.Size.Width,
+                        InputImage.Size.Height]; // create array to speed-up operations (Bitmap functions are very slow)
+                Color[,] Image2 = new Color[InputImage2.Size.Width, InputImage2.Size.Height];
 
-            // copy input Bitmap to array            
-            for (int x = 0; x < InputImage.Size.Width; x++)                 // loop over columns
-                for (int y = 0; y < InputImage.Size.Height; y++)            // loop over rows
-                    Image[x, y] = InputImage.GetPixel(x, y);                // set pixel color in array at (x,y)
+                // copy input Bitmap to array            
+                for (int x = 0; x < InputImage.Size.Width; x++) // loop over columns
+                for (int y = 0; y < InputImage.Size.Height; y++) // loop over rows
+                    Image1[x, y] = InputImage.GetPixel(x, y); // set pixel color in array at (x,y)
 
-            // execute image processing steps
-            byte[,] workingImage = convertToGrayscale(Image);               // convert image to grayscale
-            workingImage = applyProcessingFunction(workingImage);           // processing functions
+                for (int x = 0; x < InputImage2.Size.Width; x++)
+                for (int y = 0; y < InputImage2.Size.Height; y++)
+                    Image2[x, y] = InputImage2.GetPixel(x, y);
 
-            // copy array to output Bitmap
-            for (int x = 0; x < workingImage.GetLength(0); x++)             // loop over columns
-                for (int y = 0; y < workingImage.GetLength(1); y++)         // loop over rows
+                // execute image processing steps
+                byte[,] workingImage = convertToGrayscale(Image1); // convert image to grayscale
+                byte[,] workingImage2 = convertToGrayscale(Image2);
+                workingImage = applyProcessingFunction(workingImage, workingImage2); // processing functions
+
+
+                // copy array to output Bitmap
+                for (int x = 0; x < workingImage.GetLength(0); x++) // loop over columns
+                for (int y = 0; y < workingImage.GetLength(1); y++) // loop over rows
                 {
                     Color newColor = Color.FromArgb(workingImage[x, y], workingImage[x, y], workingImage[x, y]);
-                    OutputImage.SetPixel(x, y, newColor);                  // set the pixel color at coordinate (x,y)
+                    OutputImage.SetPixel(x, y, newColor); // set the pixel color at coordinate (x,y)
                 }
-            
-            pictureBox2.Image = (Image)OutputImage;                         // display output image
+
+                pictureBox2.Image = (Image)OutputImage; // display output image
+            }
+            else
+            {
+                if (InputImage == null) return; // get out if no input image
+                if (OutputImage != null) OutputImage.Dispose(); // reset output image
+                OutputImage = new Bitmap(InputImage.Size.Width, InputImage.Size.Height); // create new output image
+                Color[,]
+                    Image1 = new Color[InputImage.Size.Width,
+                        InputImage.Size.Height]; // create array to speed-up operations (Bitmap functions are very slow)
+
+                // copy input Bitmap to array            
+                for (int x = 0; x < InputImage.Size.Width; x++) // loop over columns
+                for (int y = 0; y < InputImage.Size.Height; y++) // loop over rows
+                    Image1[x, y] = InputImage.GetPixel(x, y); // set pixel color in array at (x,y)
+
+                // execute image processing steps
+                byte[,] workingImage = convertToGrayscale(Image1); // convert image to grayscale
+                workingImage = applyProcessingFunction(workingImage, new byte[0,0]); // processing functions
+
+
+                // copy array to output Bitmap
+                for (int x = 0; x < workingImage.GetLength(0); x++) // loop over columns
+                for (int y = 0; y < workingImage.GetLength(1); y++) // loop over rows
+                {
+                    Color newColor = Color.FromArgb(workingImage[x, y], workingImage[x, y], workingImage[x, y]);
+                    OutputImage.SetPixel(x, y, newColor); // set the pixel color at coordinate (x,y)
+                }
+
+                pictureBox2.Image = (Image)OutputImage; // display output image
+            }
         }
 
         /*
          * applyProcessingFunction: defines behavior of function calls when "Apply" is pressed
          */
-        private byte[,] applyProcessingFunction(byte[,] workingImage)
+        private byte[,] applyProcessingFunction(byte[,] workingImage,  byte[,] workingImage2)
         {
             sbyte[,] horizontalKernel = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};                       // Define this kernel yourself
             sbyte[,] verticalKernel = {{-1, -2, -1},{0, 0, 0},{1, 2, 1}};                           // Define this kernel yourself
@@ -204,6 +272,12 @@ namespace INFOIBV
                     return pipeline3_4(workingImage, horizontalKernel, verticalKernel, pipelineThreshold);
                 case ProcessingFunctions.Pipeline3_5:
                     return pipeline3_5(workingImage, horizontalKernel, verticalKernel, pipelineThreshold);
+                case ProcessingFunctions.And:
+                    return (new BinaryImage(thresholdImage(workingImage, threshold)) &&
+                            new BinaryImage(thresholdImage(workingImage2, threshold))).ToByteArray();
+                case ProcessingFunctions.Or:
+                    return (new BinaryImage(thresholdImage(workingImage, threshold)) ||
+                            new BinaryImage(thresholdImage(workingImage2, threshold))).ToByteArray();
                 case ProcessingFunctions.Dilate:
                     int _filterSize = (FilterSize.SelectedIndex * 2) + 3;
                     ElementShape shape = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
