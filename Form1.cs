@@ -86,7 +86,7 @@ namespace INFOIBV
 
         private void populateFilterSize()
         {
-            for (int i = 3; i < 15; i+=2)
+            for (int i = 3; i < 56; i+=2)
             {
                 FilterSize.Items.Add(i);
             }
@@ -241,6 +241,8 @@ namespace INFOIBV
         {
             sbyte[,] horizontalKernel = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};                       // Define this kernel yourself
             sbyte[,] verticalKernel = {{-1, -2, -1},{0, 0, 0},{1, 2, 1}};                           // Define this kernel yourself
+            sbyte[,] horizontalKernelR = { { 1, 0, -1 }, { 2, 0, -2 }, { 1, 0, -1 } };
+            sbyte[,] verticalKernelR = { { 1, 2, 1 }, { 0, 0, 0 }, { -1, -2, -1 } };
             switch ((ProcessingFunctions)comboBox.SelectedIndex)
             {
                 case ProcessingFunctions.Grayscale:
@@ -255,9 +257,10 @@ namespace INFOIBV
                 case ProcessingFunctions.MedianFilter:
                     return medianFilter(workingImage, filterSize);
                 case ProcessingFunctions.DetectEdges:
-                    return edgeMagnitude(workingImage, horizontalKernel, verticalKernel);
+                    return edgeMagnitude(workingImage, horizontalKernel, verticalKernel, horizontalKernelR, verticalKernelR);
                 case ProcessingFunctions.Threshold:
                     return thresholdImage(workingImage, threshold);
+                /*
                 case ProcessingFunctions.Pipeline1:
                     return pipeline1(workingImage, filterSigma, horizontalKernel, verticalKernel, pipelineThreshold);
                 case ProcessingFunctions.Pipeline2:
@@ -272,6 +275,7 @@ namespace INFOIBV
                     return pipeline3_4(workingImage, horizontalKernel, verticalKernel, pipelineThreshold);
                 case ProcessingFunctions.Pipeline3_5:
                     return pipeline3_5(workingImage, horizontalKernel, verticalKernel, pipelineThreshold);
+                    */
                 case ProcessingFunctions.And:
                     return (new BinaryImage(thresholdImage(workingImage, threshold)) &&
                             new BinaryImage(thresholdImage(workingImage2, threshold))).ToByteArray();
@@ -291,25 +295,30 @@ namespace INFOIBV
                     ElementShape shape2 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
                     StructuringElement H2 = new StructuringElement(shape2, _filterSize2);
                     return Binary.Checked
-                        ? (new BinaryImage(workingImage) - H2).ToByteArray()
+                        ? (new BinaryImage(thresholdImage(workingImage, threshold)) - H2).ToByteArray()
                         : (new GrayScaleImage(workingImage) - H2).ToByteArray();
                 case ProcessingFunctions.Open:
                     int _filterSize3 = (FilterSize.SelectedIndex * 2) + 3;
                     ElementShape shape3 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
                     StructuringElement H3 = new StructuringElement(shape3, _filterSize3);
                     return Binary.Checked
-                        ? (new BinaryImage(workingImage) * H3).ToByteArray()
+                        ? (new BinaryImage(thresholdImage(workingImage, threshold)) * H3).ToByteArray()
                         : (new GrayScaleImage(workingImage) * H3).ToByteArray();
                 case ProcessingFunctions.Close:
                     int _filterSize4 = (FilterSize.SelectedIndex * 2) + 3;
                     ElementShape shape4 = StructuringShape.SelectedIndex == 0 ? ElementShape.Square : ElementShape.Star;
                     StructuringElement H4 = new StructuringElement(shape4, _filterSize4);
                     return Binary.Checked
-                        ? (new BinaryImage(workingImage) / H4).ToByteArray()
+                        ? (new BinaryImage(thresholdImage(workingImage, threshold)) / H4).ToByteArray()
                         : (new GrayScaleImage(workingImage) / H4).ToByteArray();
                 case ProcessingFunctions.CountValues:
                     GrayScaleImage I = new GrayScaleImage(workingImage);
                     var c = I.countValues();
+                    Console.WriteLine(c.Item1);
+                    foreach (var pair in c.Item2)
+                    {
+                        Console.WriteLine(pair);
+                    }
                     return I.ToByteArray();
                 case ProcessingFunctions.TraceBoundary:
                     BinaryImage I2 = new BinaryImage(workingImage);
@@ -605,6 +614,10 @@ namespace INFOIBV
             return tempImage;
         }
 
+        private int clamp(int i)
+        {
+            return i > 255 ? 255 : i;
+        }
 
         /*
          * edgeMagnitude: calculate the image derivative of an input image and a provided edge kernel
@@ -613,19 +626,23 @@ namespace INFOIBV
          *          verticalKernel      vertical edge kernel
          * output:                      single-channel (byte) image
          */
-        private byte[,] edgeMagnitude(byte[,] inputImage, sbyte[,] horizontalKernel, sbyte[,] verticalKernel)
+        private byte[,] edgeMagnitude(byte[,] inputImage, sbyte[,] horizontalKernel, sbyte[,] verticalKernel, sbyte[,] revHK, sbyte[,] revVK)
         {
             // create temporary grayscale image
             GrayScaleImage tempImage = new GrayScaleImage(new byte[inputImage.GetLength(0), inputImage.GetLength(1)]);
 
-            float[,] fhk = map2D(horizontalKernel, b=> (float)0.5*b);
-            float[,] fvk = map2D(verticalKernel, b => (float)0.5*b);
+            float[,] fhk = map2D(horizontalKernel, b=> (float)0.125*b);
+            float[,] fvk = map2D(verticalKernel, b => (float)0.125*b);
+            float[,] rHK = map2D(revHK, b => (float)0.125 * b);
+            float[,] rVK = map2D(revVK, b => (float)0.125 * b);
             
             byte[,] h = convolveImage(inputImage, fhk);
             byte[,] v = convolveImage(inputImage, fvk);
+            byte[,] rh = convolveImage(inputImage, rHK);
+            byte[,] rv = convolveImage(inputImage, rVK);
 
-            tempImage.ApplyIndexed((p, i, j) => (int)Math.Sqrt((h[i, j] * h[i, j]) + (v[i, j] * v[i, j])));
-            return tempImage.ToByteArray();
+            tempImage.ApplyIndexed((p, i, j) => (int)Math.Max(Math.Sqrt((h[i, j] * h[i, j]) + (v[i, j] * v[i, j])),Math.Sqrt((rh[i,j] * rh[i,j]) + (rv[i,j] * rv[i,j]))));
+            return adjustContrast(tempImage.ToByteArray());
         }
 
 
@@ -643,7 +660,7 @@ namespace INFOIBV
             
             return tempImage.ToByteArray();
         }
-
+        /*
         private byte[,] pipeline1(byte[,] inputImage, float sigma, sbyte[,] horizontalKernel, sbyte[,] verticalKernel, byte threshold)
         {
             float[,] filter = createGaussianFilter(filterSize, sigma);
@@ -708,6 +725,7 @@ namespace INFOIBV
             byte[,] thresholdedImage = thresholdImage(edgedImage, threshold);
             return thresholdedImage;
         }
+        */
 
         
         // ====================================================================
@@ -1148,11 +1166,13 @@ namespace INFOIBV
             return erodedImage;
         }
         
-
+        */
         // ====================================================================
         // ============= YOUR FUNCTIONS FOR ASSIGNMENT 3 GO HERE ==============
         // ====================================================================
-    */
+    
+        
+        
     }
 
 }

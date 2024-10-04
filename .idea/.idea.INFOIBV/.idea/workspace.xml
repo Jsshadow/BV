@@ -9,10 +9,7 @@
   <component name="ChangeListManager">
     <list default="true" id="7006531f-6654-4283-8f5e-a3ed503ed201" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Form1.Designer.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Form1.Designer.cs" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Form1.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Form1.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.exe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" beforeDir="false" afterPath="$PROJECT_DIR$/obj/x86/Debug/INFOIBV.pdb" afterDir="false" />
     </list>
@@ -25,7 +22,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/388cbae2d6f74d9e93f2a786bd7b2c4917a648/03/34b00d9a/Enumerable.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/DecompilerCache/decompiler/e585f5e2b21741c8a3a65b4f9abfa5e8572e20/6e/f7e993fa/Convert.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -98,7 +95,8 @@
       <workItem from="1727443180811" duration="269000" />
       <workItem from="1727651842896" duration="794000" />
       <workItem from="1727781687210" duration="36000" />
-      <workItem from="1727781745889" duration="2639000" />
+      <workItem from="1727781745889" duration="5833000" />
+      <workItem from="1728035411131" duration="3169000" />
     </task>
     <task id="LOCAL-00001" summary="bro">
       <created>1727615733860</created>
