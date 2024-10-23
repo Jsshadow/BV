@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_Update_at_09_10_2024_14_38_[Changes]" date="1728477789542" recycled="true" deleted="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/shelf/Uncommitted_changes_before_Update_at_09_10_2024_14_38_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 09/10/2024 14:38 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="obj/x86/Debug/INFOIBV.pdb" />
+    <option name="AFTER_PATH" value="obj/x86/Debug/INFOIBV.pdb" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/shelf/Uncommitted_changes_before_Update_at_09_10_2024_14_38_[Changes]/INFOIBV.pdb" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="obj/x86/Debug/INFOIBV.exe" />
+    <option name="AFTER_PATH" value="obj/x86/Debug/INFOIBV.exe" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/shelf/Uncommitted_changes_before_Update_at_09_10_2024_14_38_[Changes]/INFOIBV.exe" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" />
+    <option name="AFTER_PATH" value="obj/x86/Debug/INFOIBV.csproj.CoreCompileInputs.cache" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/shelf/Uncommitted_changes_before_Update_at_09_10_2024_14_38_[Changes]/INFOIBV.csproj.CoreCompileInputs.cache" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" />
+    <option name="AFTER_PATH" value="obj/x86/Debug/INFOIBV.csproj.GenerateResource.cache" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/.idea.INFOIBV/.idea/shelf/Uncommitted_changes_before_Update_at_09_10_2024_14_38_[Changes]/INFOIBV.csproj.GenerateResource.cache" />
+  </binary>
+</changelist>

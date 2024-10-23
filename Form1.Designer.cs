@@ -45,6 +45,18 @@ namespace INFOIBV
             this.StructuringShape = new System.Windows.Forms.ComboBox();
             this.Binary = new System.Windows.Forms.CheckBox();
             this.LoadImage2 = new System.Windows.Forms.Button();
+            this.minLength = new System.Windows.Forms.TextBox();
+            this.MaxGap = new System.Windows.Forms.TextBox();
+            this.EdgeThreshold = new System.Windows.Forms.TextBox();
+            this.peakingtheshold = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.minAngleText = new System.Windows.Forms.TextBox();
+            this.maxAngleText = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
@@ -171,6 +183,7 @@ namespace INFOIBV
             this.Binary.Text = "Binary";
             this.Binary.UseVisualStyleBackColor = true;
             this.Binary.Visible = false;
+            this.Binary.CheckedChanged += new System.EventHandler(this.Binary_CheckedChanged);
             // 
             // LoadImage2
             // 
@@ -183,11 +196,120 @@ namespace INFOIBV
             this.LoadImage2.UseVisualStyleBackColor = true;
             this.LoadImage2.Click += new System.EventHandler(this.loadImageButton2_Click);
             // 
+            // minLength
+            // 
+            this.minLength.AccessibleDescription = "";
+            this.minLength.AccessibleName = "minL";
+            this.minLength.Location = new System.Drawing.Point(987, 83);
+            this.minLength.Name = "minLength";
+            this.minLength.Size = new System.Drawing.Size(100, 26);
+            this.minLength.TabIndex = 12;
+            this.minLength.Tag = "";
+            this.minLength.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // MaxGap
+            // 
+            this.MaxGap.AccessibleName = "maxG";
+            this.MaxGap.Location = new System.Drawing.Point(1093, 83);
+            this.MaxGap.Name = "MaxGap";
+            this.MaxGap.Size = new System.Drawing.Size(100, 26);
+            this.MaxGap.TabIndex = 13;
+            // 
+            // EdgeThreshold
+            // 
+            this.EdgeThreshold.AccessibleName = "mit";
+            this.EdgeThreshold.Location = new System.Drawing.Point(1199, 83);
+            this.EdgeThreshold.Name = "EdgeThreshold";
+            this.EdgeThreshold.Size = new System.Drawing.Size(100, 26);
+            this.EdgeThreshold.TabIndex = 14;
+            // 
+            // peakingtheshold
+            // 
+            this.peakingtheshold.AccessibleName = "pthres";
+            this.peakingtheshold.Location = new System.Drawing.Point(1305, 83);
+            this.peakingtheshold.Name = "peakingtheshold";
+            this.peakingtheshold.Size = new System.Drawing.Size(100, 26);
+            this.peakingtheshold.TabIndex = 15;
+            // 
+            // label1
+            // 
+            this.label1.Location = new System.Drawing.Point(987, 57);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(100, 23);
+            this.label1.TabIndex = 16;
+            this.label1.Text = "Min length";
+            // 
+            // label2
+            // 
+            this.label2.Location = new System.Drawing.Point(1093, 58);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(100, 23);
+            this.label2.TabIndex = 17;
+            this.label2.Text = "Max Gap";
+            // 
+            // label3
+            // 
+            this.label3.Location = new System.Drawing.Point(1199, 54);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(100, 23);
+            this.label3.TabIndex = 18;
+            this.label3.Text = "edge thresh";
+            // 
+            // label4
+            // 
+            this.label4.Location = new System.Drawing.Point(1305, 54);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(100, 23);
+            this.label4.TabIndex = 19;
+            this.label4.Text = "peaking thresh(percentage)";
+            // 
+            // minAngleText
+            // 
+            this.minAngleText.Location = new System.Drawing.Point(1422, 83);
+            this.minAngleText.Name = "minAngleText";
+            this.minAngleText.Size = new System.Drawing.Size(51, 26);
+            this.minAngleText.TabIndex = 20;
+            // 
+            // maxAngleText
+            // 
+            this.maxAngleText.Location = new System.Drawing.Point(1479, 83);
+            this.maxAngleText.Name = "maxAngleText";
+            this.maxAngleText.Size = new System.Drawing.Size(51, 26);
+            this.maxAngleText.TabIndex = 21;
+            // 
+            // label5
+            // 
+            this.label5.Location = new System.Drawing.Point(1431, 54);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(42, 23);
+            this.label5.TabIndex = 22;
+            this.label5.Text = "min\r\n";
+            // 
+            // label6
+            // 
+            this.label6.Location = new System.Drawing.Point(1488, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(42, 23);
+            this.label6.TabIndex = 23;
+            this.label6.Text = "max";
+            // 
             // INFOIBV
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1578, 886);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
+            this.Controls.Add(this.maxAngleText);
+            this.Controls.Add(this.minAngleText);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.label3);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.peakingtheshold);
+            this.Controls.Add(this.EdgeThreshold);
+            this.Controls.Add(this.MaxGap);
+            this.Controls.Add(this.minLength);
             this.Controls.Add(this.LoadImage2);
             this.Controls.Add(this.Binary);
             this.Controls.Add(this.StructuringShape);
@@ -209,6 +331,26 @@ namespace INFOIBV
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Label label6;
+
+        private System.Windows.Forms.TextBox minAngleText;
+        private System.Windows.Forms.TextBox maxAngleText;
+        private System.Windows.Forms.Label label5;
+
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+
+        private System.Windows.Forms.Label label1;
+
+        private System.Windows.Forms.TextBox peakingtheshold;
+
+        private System.Windows.Forms.TextBox EdgeThreshold;
+
+        private System.Windows.Forms.TextBox MaxGap;
+
+        private System.Windows.Forms.TextBox minLength;
 
         private System.Windows.Forms.Button LoadImage2;
         private System.Windows.Forms.ComboBox StructuringShape;
